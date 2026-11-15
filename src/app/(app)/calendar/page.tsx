@@ -52,7 +52,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
     <>
       <p className="kicker">Everything with a date</p>
       <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-        <h1 className="font-serif text-4xl">{title}</h1>
+        <h1 className="font-display font-semibold tracking-tight text-4xl">{title}</h1>
         <div className="flex gap-2">
           {imported.feeds.length > 0 && <form action={syncCalendars}><button className="btn h-9 px-3">Sync calendars</button></form>}
           <Link href={link(shiftMonth(month, -1), hidden)} className="btn h-9 px-3" aria-label="Previous month">←</Link>
@@ -85,7 +85,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
             const out = d.slice(0, 7) !== month;
             return (
               <div key={d} className={`min-h-16 border-b border-r border-line p-1 [&:nth-child(7n)]:border-r-0 sm:min-h-24 ${out ? "bg-paper/60" : ""}`}>
-                <p className={`num mb-1 text-xs ${d === today ? "inline-grid size-6 place-items-center rounded-full bg-accent text-white" : out ? "text-muted/60" : "text-muted"}`}>{Number(d.slice(8))}</p>
+                <p className={`num mb-1 text-xs ${d === today ? "inline-grid size-6 place-items-center rounded-full bg-accent font-bold text-[#04121f]" : out ? "text-muted/60" : "text-muted"}`}>{Number(d.slice(8))}</p>
                 <ul className="space-y-0.5">
                   {list.slice(0, 3).map((e) =>
                     e.layer.deadline ? (

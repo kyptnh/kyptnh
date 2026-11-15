@@ -42,7 +42,7 @@ export function QuickAdd({ courses }: { courses: Course[] }) {
       <dialog ref={dialog} aria-labelledby="qa-title" className="m-auto w-[min(34rem,calc(100vw-1.5rem))] rounded-xl border border-line bg-card p-0 text-ink">
         <form ref={form} action={action} className="space-y-4 p-5">
           <div className="flex items-center justify-between">
-            <h2 id="qa-title" className="font-serif text-2xl">Quick add</h2>
+            <h2 id="qa-title" className="font-display font-semibold tracking-tight text-2xl">Quick add</h2>
             <button type="button" onClick={() => dialog.current?.close()} className="text-sm text-muted hover:text-ink">Close</button>
           </div>
 

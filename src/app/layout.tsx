@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { GeistSerif } from "geist/font/serif";
+import { GeistPixelSquare } from "geist/font/pixel";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,12 +11,13 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Command Center", statusBarStyle: "default" },
 };
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f5f3ee" }, { media: "(prefers-color-scheme: dark)", color: "#121210" }],
+  themeColor: "#0b1120",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${GeistSerif.variable} h-full antialiased`}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} h-full antialiased`}>
       <body className="min-h-full">{children}</body>
     </html>
   );

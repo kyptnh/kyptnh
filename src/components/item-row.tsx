@@ -24,7 +24,7 @@ export function ItemRow({ item, course, now }: { item: Item; course?: Course; no
         </button>
       </form>
       <div className="min-w-0 flex-1">
-        <p className={`truncate text-sm font-medium ${done ? "text-muted line-through" : ""}`}>{item.title}</p>
+        <p className={`text-sm font-medium sm:truncate ${done ? "text-muted line-through" : ""}`}>{item.title}</p>
         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
           {course && (
             <span className="inline-flex items-center gap-1.5">
@@ -36,8 +36,12 @@ export function ItemRow({ item, course, now }: { item: Item; course?: Course; no
           {item.weight_pct != null && <span className="num">{Number(item.weight_pct)}%</span>}
           {item.est_hours != null && <span className="num">{Number(item.est_hours)} h</span>}
         </p>
+        <p className="mt-0.5 text-xs sm:hidden">
+          <span className="num">{fmtDue(due, item.all_day)}</span>
+          {!done && <span className={urgent ? " font-medium text-signal" : " text-muted"}> · {countdown(days)}</span>}
+        </p>
       </div>
-      <div className="shrink-0 text-right">
+      <div className="hidden shrink-0 text-right sm:block">
         <p className="num text-sm">{fmtDue(due, item.all_day)}</p>
         {!done && <p className={`text-xs ${urgent ? "font-medium text-signal" : "text-muted"}`}>{countdown(days)}</p>}
       </div>
