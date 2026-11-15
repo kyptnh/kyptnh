@@ -21,6 +21,10 @@ const found = z.object({
   })).max(20),
 });
 
+/** Sources read per scan (oldest first) and how many are read at the same time. */
+const SCAN_LIMIT = 18;
+const SCAN_PARALLEL = 3;
+
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 function prompt(profile: string, today: string, sourceName: string, url: string, text: string) {
@@ -54,7 +58,7 @@ ${text}
 export async function runDiscovery(): Promise<FormState> {
   const { supabase } = await requireUser();
   const [{ data: sources }, { data: profile }, { data: existing }] = await Promise.all([
-    supabase.from("sources").select("id,name,url").eq("active", true).order("last_run_at", { nullsFirst: true }).limit(6),
+    supabase.from("sources").select("id,name,url").eq("active", true).order("last_run_at", { nullsFirst: true }).limit(SCAN_LIMIT),
     supabase.from("profiles").select("focus").maybeSingle(),
     supabase.from("opportunities").select("title,url"),
   ]);
@@ -68,7 +72,7 @@ export async function runDiscovery(): Promise<FormState> {
   let added = 0;
   let failed = 0;
 
-  for (const s of sources) {
+  const scanOne = async (s: { id: string; name: string; url: string }) => {
     let status = "ok";
     try {
       if (!isSafeUrl(s.url)) throw new Error("URL not allowed");
@@ -105,7 +109,11 @@ export async function runDiscovery(): Promise<FormState> {
       status = `failed: ${e instanceof Error ? e.message.slice(0, 150) : "unknown error"}`;
     }
     await supabase.from("sources").update({ last_run_at: now.toISOString(), last_status: status }).eq("id", s.id);
-  }
+  };
+  const queue = [...sources];
+  await Promise.all(Array.from({ length: SCAN_PARALLEL }, async () => {
+    for (let s = queue.shift(); s; s = queue.shift()) await scanOne(s);
+  }));
   revalidatePath("/", "layout");
   return { ok: failed < sources.length, message: `Scanned ${sources.length} source${sources.length > 1 ? "s" : ""}: ${added} new, ${failed} failed. Details are in Settings.` };
 }

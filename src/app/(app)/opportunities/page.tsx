@@ -11,6 +11,8 @@ import { countdown, daysUntil, fmtDue } from "@/lib/time";
 import { OPP_CATEGORIES, OPP_CLOSED, OPP_STATUSES, type Opportunity } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Opportunity Radar" };
+// A scan reads many pages in one request, so allow it the full five minutes.
+export const maxDuration = 300;
 const CATEGORY: Record<string, string> = Object.fromEntries(OPP_CATEGORIES);
 
 function Card({ o, now }: { o: Opportunity; now: Date }) {

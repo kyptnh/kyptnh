@@ -68,7 +68,7 @@ async function Settings() {
           </ul>
           <div className="border-t border-line"><SourceForm /></div>
         </div>
-        <p className="mt-2 text-xs text-muted">Add pages that list calls, programmes or openings. Each scan reads up to six sources, oldest first.</p>
+        <p className="mt-2 text-xs text-muted">Add pages that list calls, programmes or openings. Each scan reads up to 18 sources, starting with the ones scanned longest ago, so a long list takes several scans to cover.</p>
       </section>
     </>
   );
