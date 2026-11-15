@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Suspense } from "react";
-import { CalendarForm, CopyField, ProfileForm, SourceForm } from "@/components/settings-forms";
+import { CalendarForm, CopyField, FeedColor, ProfileForm, SourceForm } from "@/components/settings-forms";
 import { removeCalendar, syncCalendars } from "@/lib/calendars";
 import { Skeleton } from "@/components/skeleton";
 import { ensureCalendarToken, removeSource, resetCalendarToken } from "@/lib/discovery";
@@ -17,7 +17,7 @@ async function Settings() {
     ensureCalendarToken(),
     supabase.from("profiles").select("focus").maybeSingle(),
     supabase.from("sources").select("id,name,url,last_run_at,last_status").order("name"),
-    supabase.from("calendar_feeds").select("id,name,last_synced_at,last_status").order("name"),
+    supabase.from("calendar_feeds").select("id,name,color,last_synced_at,last_status").order("name"),
   ]);
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
@@ -65,6 +65,7 @@ async function Settings() {
                       {f.last_synced_at ? `Last sync ${fmtDue(new Date(f.last_synced_at), false)} · ${f.last_status}` : "Not synced yet"}
                     </p>
                   </div>
+                  <FeedColor id={f.id} color={f.color} name={f.name} />
                   <form action={removeCalendar}>
                     <input type="hidden" name="id" value={f.id} />
                     <button aria-label={`Disconnect calendar ${f.name}`} className="grid size-8 place-items-center rounded text-muted hover:text-signal">×</button>

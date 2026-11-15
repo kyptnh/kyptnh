@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
 import type { FormState } from "@/lib/actions";
-import { addCalendar } from "@/lib/calendars";
+import { addCalendar, setCalendarColor } from "@/lib/calendars";
 import { addSource, saveProfile } from "@/lib/discovery";
 
 function Status({ state }: { state: FormState }) {
@@ -55,6 +55,20 @@ export function CalendarForm() {
       <div><label htmlFor="k-u" className="label">Public calendar address</label><input id="k-u" name="url" required placeholder="webcal://" className="field" /></div>
       <button className="btn" disabled={pending}>{pending ? "Importing…" : "Connect"}</button>
       <div className="sm:col-span-3"><Status state={state} /></div>
+    </form>
+  );
+}
+
+const FEED_COLORS = [["red", "Red"], ["blue", "Blue"], ["purple", "Purple"], ["moss", "Green"], ["teal", "Teal"], ["slate", "Grey"]] as const;
+
+export function FeedColor({ id, color, name }: { id: string; color: string; name: string }) {
+  return (
+    <form action={setCalendarColor} className="flex items-center gap-2">
+      <input type="hidden" name="id" value={id} />
+      <span aria-hidden className="size-3 rounded-full" style={{ background: `var(--c-${color})` }} />
+      <select name="color" aria-label={`Colour of ${name}`} defaultValue={color} key={color} onChange={(e) => e.currentTarget.form?.requestSubmit()} className="h-8 rounded-md border border-line bg-card px-2 text-xs">
+        {FEED_COLORS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+      </select>
     </form>
   );
 }

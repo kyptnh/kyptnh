@@ -64,3 +64,10 @@ export async function removeCalendar(form: FormData) {
   await supabase.from("calendar_feeds").delete().eq("id", z.uuid().parse(form.get("id")));
   revalidatePath("/", "layout");
 }
+
+export async function setCalendarColor(form: FormData) {
+  const color = z.enum(["red", "blue", "purple", "moss", "teal", "slate"]).parse(form.get("color"));
+  const { supabase } = await requireUser();
+  await supabase.from("calendar_feeds").update({ color }).eq("id", z.uuid().parse(form.get("id")));
+  revalidatePath("/", "layout");
+}
