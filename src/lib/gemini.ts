@@ -19,7 +19,7 @@ async function candidates(key: string): Promise<string[]> {
 }
 
 /** Ask Gemini for a JSON answer. Tries the next model when one is unavailable on this key's tier. */
-export async function generateJson(prompt: string): Promise<unknown> {
+export async function generateJson(prompt: string, file?: { mimeType: string; base64: string }): Promise<unknown> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("GEMINI_API_KEY is not set in Vercel.");
   let last = "no model available";
@@ -27,8 +27,8 @@ export async function generateJson(prompt: string): Promise<unknown> {
     const res = await fetch(`${BASE}/${model}:generateContent`, {
       method: "POST",
       headers: { "x-goog-api-key": key, "content-type": "application/json" },
-      body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2 } }),
-      signal: AbortSignal.timeout(60000),
+      body: JSON.stringify({ contents: [{ role: "user", parts: [...(file ? [{ inline_data: { mime_type: file.mimeType, data: file.base64 } }] : []), { text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.2 } }),
+      signal: AbortSignal.timeout(file ? 120000 : 60000),
     });
     if (!res.ok) { last = `${model} returned ${res.status}`; continue; }
     const data = await res.json();

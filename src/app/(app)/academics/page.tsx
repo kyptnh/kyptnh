@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CourseForm } from "@/components/course-form";
+import { ImportSyllabus } from "@/components/import-syllabus";
 import { ItemRow } from "@/components/item-row";
 import { Skeleton } from "@/components/skeleton";
 import { removeCourse } from "@/lib/actions";
@@ -10,6 +11,7 @@ import type { Item } from "@/lib/types";
 import { weekBuckets } from "@/lib/workload";
 
 export const metadata: Metadata = { title: "Academics" };
+export const maxDuration = 300;
 
 async function Academics() {
   const [all, courses] = await Promise.all([getItems(), getCourses()]);
@@ -73,6 +75,11 @@ async function Academics() {
             </ul>
           </details>
         )}
+      </section>
+
+      <section className="mt-8" aria-labelledby="h-import">
+        <h2 id="h-import" className="eyebrow">Import from a syllabus</h2>
+        <div className="card mt-2"><ImportSyllabus courses={courses} /></div>
       </section>
 
       <section className="mt-8" aria-labelledby="h-courses">
