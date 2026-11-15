@@ -20,7 +20,7 @@ function Row({ a, now }: { a: Application; now: Date }) {
     <li className="flex flex-wrap items-start gap-x-4 gap-y-2 px-4 py-3">
       <div className="min-w-0 flex-1 basis-56">
         <p className="truncate text-sm font-medium">
-          {a.url ? <a href={a.url} target="_blank" rel="noopener noreferrer" className="underline decoration-line underline-offset-4 hover:decoration-ink">{a.organisation}</a> : a.organisation}
+          {a.url ? <a href={a.url} target="_blank" rel="noopener noreferrer" className="underline decoration-accent-ink/40 underline-offset-4 hover:decoration-accent-ink">{a.organisation}</a> : a.organisation}
         </p>
         <p className="mt-0.5 truncate text-xs text-muted">{a.role} · {TRACK[a.track]}</p>
         {a.next_step && open && <p className="mt-1 text-xs">Next: {a.next_step}</p>}
@@ -47,12 +47,12 @@ async function Pipeline() {
 
   return (
     <>
-      <p className="eyebrow">Internships and jobs</p>
+      <p className="kicker">Internships and jobs</p>
       <h1 className="mt-1 font-serif text-4xl">Career Pipeline</h1>
 
       <dl className="mt-6 grid grid-cols-4 gap-3">
-        {[["Preparing", count("researching") + count("preparing")], ["Applied", count("applied")], ["Interview", count("interview")], ["Offers", count("offer")]].map(([k, v]) => (
-          <div key={String(k)} className="card p-4"><dt className="label">{k}</dt><dd className="num mt-1 text-3xl">{v}</dd></div>
+        {[["Preparing", count("researching") + count("preparing"), "var(--c-slate)"], ["Applied", count("applied"), "var(--accent)"], ["Interview", count("interview"), "var(--c-plum)"], ["Offers", count("offer"), "var(--ok)"]].map(([k, v, color]) => (
+          <div key={String(k)} className="card border-t-[3px] p-4" style={{ borderTopColor: String(color) }}><dt className="label">{k}</dt><dd className="num mt-1 text-3xl">{v}</dd></div>
         ))}
       </dl>
 

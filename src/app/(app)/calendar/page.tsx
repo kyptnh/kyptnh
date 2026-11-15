@@ -42,7 +42,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
 
   return (
     <>
-      <p className="eyebrow">Everything with a date</p>
+      <p className="kicker">Everything with a date</p>
       <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-serif text-4xl">{title}</h1>
         <div className="flex gap-2">
@@ -76,10 +76,11 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
             const out = d.slice(0, 7) !== month;
             return (
               <div key={d} className={`min-h-16 border-b border-r border-line p-1 [&:nth-child(7n)]:border-r-0 sm:min-h-24 ${out ? "bg-paper/60" : ""}`}>
-                <p className={`num mb-1 text-xs ${d === today ? "inline-grid size-6 place-items-center rounded-full bg-ink text-paper" : out ? "text-muted/60" : "text-muted"}`}>{Number(d.slice(8))}</p>
+                <p className={`num mb-1 text-xs ${d === today ? "inline-grid size-6 place-items-center rounded-full bg-accent text-white" : out ? "text-muted/60" : "text-muted"}`}>{Number(d.slice(8))}</p>
                 <ul className="space-y-0.5">
                   {list.slice(0, 3).map((e) => (
-                    <li key={e.key} title={e.title} className={`flex items-center gap-1 truncate text-[11px] leading-tight ${e.done ? "text-muted line-through" : ""}`}>
+                    <li key={e.key} title={e.title} className={`flex items-center gap-1 truncate rounded px-1 py-0.5 text-[11px] leading-tight ${e.done ? "text-muted line-through" : ""}`}
+                      style={{ background: `color-mix(in srgb, ${LAYERS.find((l) => l.id === e.layer)!.color} 14%, transparent)` }}>
                       <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: LAYERS.find((l) => l.id === e.layer)!.color }} />
                       <span className="hidden truncate sm:inline">{e.title}</span>
                     </li>

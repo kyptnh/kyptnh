@@ -1,0 +1,3 @@
+-- Applied to the hosted project on 2026-11-15 (see Supabase migration history for the full statement,
+-- including the seed rows). Adds: opportunities.source_url, sources, profiles, calendar_tokens (all with
+-- owner-only row-level security) and the token-addressed, read-only function public.calendar_feed(p_token).

@@ -29,7 +29,7 @@ async function Academics() {
 
   return (
     <>
-      <p className="eyebrow">Master&apos;s programme</p>
+      <p className="kicker">Master&apos;s programme</p>
       <h1 className="mt-1 font-serif text-4xl">Academics</h1>
 
       <section className="mt-6" aria-labelledby="h-load">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { OpportunityForm } from "@/components/record-forms";
+import { ScanButton } from "@/components/scan-button";
 import { RemoveButton } from "@/components/remove-button";
 import { Skeleton } from "@/components/skeleton";
 import { StatusSelect } from "@/components/status-select";
@@ -20,9 +21,15 @@ function Card({ o, now }: { o: Opportunity; now: Date }) {
     <li className="flex flex-wrap items-start gap-x-4 gap-y-2 px-4 py-3">
       <div className="min-w-0 flex-1 basis-56">
         <p className="truncate text-sm font-medium">
-          {o.url ? <a href={o.url} target="_blank" rel="noopener noreferrer" className="underline decoration-line underline-offset-4 hover:decoration-ink">{o.title}</a> : o.title}
+          {o.url ? <a href={o.url} target="_blank" rel="noopener noreferrer" className="underline decoration-accent-ink/40 underline-offset-4 hover:decoration-accent-ink">{o.title}</a> : o.title}
         </p>
         <p className="mt-0.5 truncate text-xs text-muted">{[o.organisation, CATEGORY[o.category]].filter(Boolean).join(" · ")}</p>
+        {o.source === "agent" && !o.verified && (
+          <p className="mt-1 text-xs">
+            <span className="badge bg-accent-soft text-accent-ink">Found by scan · unverified</span>{" "}
+            {o.source_url && <a href={o.source_url} target="_blank" rel="noopener noreferrer" className="text-accent-ink underline underline-offset-2">Check the source</a>}
+          </p>
+        )}
         {o.notes && <p className="mt-1 line-clamp-2 text-xs text-muted">{o.notes}</p>}
       </div>
       <div className="w-28 text-right">
@@ -53,9 +60,13 @@ async function Radar() {
 
   return (
     <>
-      <p className="eyebrow">Extra-curricular</p>
+      <p className="kicker">Extra-curricular</p>
       <h1 className="mt-1 font-serif text-4xl">Opportunity Radar</h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted">Score = fit (40) + strategic value (30) + urgency (20) + low effort (10). Hover a score for the breakdown.</p>
+      <div className="card mt-5 flex flex-wrap items-center justify-between gap-3 border-l-[3px] p-4" style={{ borderLeftColor: "var(--accent)" }}>
+        <p className="max-w-md text-sm">Scan your sources for new opportunities. Results land under Discovered, marked unverified until you check them.</p>
+        <ScanButton />
+      </div>
+      <p className="mt-4 max-w-2xl text-sm text-muted">Score = fit (40) + strategic value (30) + urgency (20) + low effort (10). Hover a score for the breakdown.</p>
 
       {bets.length > 0 && (
         <section className="mt-6" aria-labelledby="h-bets">

@@ -21,16 +21,16 @@ async function Home() {
 
   return (
     <>
-      <p className="eyebrow">{today}</p>
+      <p className="kicker">{today}</p>
       <h1 className="mt-1 font-serif text-4xl">Command Center</h1>
 
       <dl className="mt-6 grid grid-cols-3 gap-3">
         {[
-          ["Overdue", overdue.length, overdue.length ? "text-signal" : ""],
-          ["Due in 14 days", soon.length, ""],
-          ["Prep hours, this + next week", thisWeek.hours + nextWeek.hours, ""],
-        ].map(([k, v, cls]) => (
-          <div key={String(k)} className="card p-4">
+          ["Overdue", overdue.length, overdue.length ? "text-signal" : "", "var(--signal)"],
+          ["Due in 14 days", soon.length, "", "var(--accent)"],
+          ["Prep hours, this + next week", thisWeek.hours + nextWeek.hours, "", "var(--c-teal)"],
+        ].map(([k, v, cls, color]) => (
+          <div key={String(k)} className="card border-t-[3px] p-4" style={{ borderTopColor: String(color) }}>
             <dt className="label">{k}</dt>
             <dd className={`num mt-1 text-3xl ${cls}`}>{v}</dd>
           </div>
