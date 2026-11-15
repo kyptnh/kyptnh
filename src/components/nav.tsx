@@ -4,13 +4,16 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/", label: "Command Center", short: "Home" },
-  { href: "/academics", label: "Academics", short: "Academics" },
+  { href: "/calendar", label: "Calendar", short: "Calendar" },
+  { href: "/academics", label: "Academics", short: "Study" },
+  { href: "/opportunities", label: "Opportunity Radar", short: "Radar" },
+  { href: "/career", label: "Career Pipeline", short: "Career" },
 ] as const;
 
 export function Nav({ variant }: { variant: "side" | "bottom" }) {
   const path = usePathname();
   return (
-    <nav aria-label="Main" className={variant === "side" ? "flex flex-col gap-0.5" : "grid grid-cols-2"}>
+    <nav aria-label="Main" className={variant === "side" ? "flex flex-col gap-0.5" : "grid grid-cols-5"}>
       {LINKS.map((l) => {
         const active = l.href === "/" ? path === "/" : path.startsWith(l.href);
         return (
@@ -21,7 +24,7 @@ export function Nav({ variant }: { variant: "side" | "bottom" }) {
             className={
               variant === "side"
                 ? `rounded-md px-3 py-2 text-sm ${active ? "bg-ink text-paper" : "text-muted hover:text-ink"}`
-                : `flex h-14 items-center justify-center text-sm ${active ? "font-medium text-ink" : "text-muted"}`
+                : `flex h-14 items-center justify-center text-xs ${active ? "font-medium text-ink" : "text-muted"}`
             }
           >
             {variant === "side" ? l.label : l.short}

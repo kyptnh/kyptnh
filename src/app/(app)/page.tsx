@@ -2,17 +2,20 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ItemRow } from "@/components/item-row";
 import { Skeleton } from "@/components/skeleton";
-import { getCourses, getItems } from "@/lib/data";
+import { EntryRow } from "@/components/entry-row";
+import { buildAgenda } from "@/lib/agenda";
+import { getApplications, getCourses, getItems, getOpportunities } from "@/lib/data";
 import { daysUntil, TZ } from "@/lib/time";
 import { weekBuckets } from "@/lib/workload";
 
 async function Home() {
-  const [items, courses] = await Promise.all([getItems(), getCourses()]);
+  const [items, courses, opps, apps] = await Promise.all([getItems(), getCourses(), getOpportunities(), getApplications()]);
   const now = new Date();
   const byId = new Map(courses.map((c) => [c.id, c]));
   const open = items.filter((i) => i.status !== "done");
   const overdue = open.filter((i) => daysUntil(new Date(i.due_at), now) < 0);
   const soon = open.filter((i) => { const d = daysUntil(new Date(i.due_at), now); return d >= 0 && d <= 14; });
+  const other = buildAgenda([], [], opps, apps).filter((e) => { const d = daysUntil(new Date(e.at), now); return !e.done && d <= 30; });
   const [thisWeek, nextWeek] = weekBuckets(items, now, 2);
   const today = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, weekday: "long", day: "numeric", month: "long" }).format(now);
 
@@ -51,12 +54,19 @@ async function Home() {
           </ul>
         ) : (
           <div className="card mt-2 p-6 text-sm text-muted">
-            {items.length === 0 ? (
+            {items.length === 0 && other.length === 0 ? (
               <>Nothing here yet. Add your courses in <Link href="/academics" className="text-ink underline">Academics</Link>, then use Quick add for each assignment and exam.</>
             ) : "Nothing due in the next two weeks."}
           </div>
         )}
       </section>
+
+      {other.length > 0 && (
+        <section className="mt-8" aria-labelledby="h-other">
+          <h2 id="h-other" className="eyebrow">Opportunities and applications, next 30 days</h2>
+          <ul className="card mt-2 divide-y divide-line">{other.map((e) => <EntryRow key={e.key} entry={e} now={now} />)}</ul>
+        </section>
+      )}
     </>
   );
 }
