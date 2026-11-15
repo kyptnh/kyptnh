@@ -23,7 +23,9 @@ const found = z.object({
 
 /** Sources read per scan (oldest first) and how many are read at the same time. */
 const SCAN_LIMIT = 18;
-const SCAN_PARALLEL = 3;
+const SCAN_PARALLEL = 2;
+/** Stop starting new sources after this long, so the request always finishes; the rest wait for the next scan. */
+const SCAN_BUDGET_MS = 230_000;
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
@@ -76,10 +78,18 @@ export async function runDiscovery(): Promise<FormState> {
     let status = "ok";
     try {
       if (!isSafeUrl(s.url)) throw new Error("URL not allowed");
-      const res = await fetch(s.url, { headers: { "user-agent": "CareerCommandCenter/1.0 (personal use)", accept: "text/html" }, redirect: "follow", signal: AbortSignal.timeout(15000) });
-      if (!res.ok) throw new Error(`Page returned ${res.status}`);
+      let res: Response | undefined;
+      for (let attempt = 0; attempt < 2 && !res; attempt++) {
+        try {
+          res = await fetch(s.url, { headers: { "user-agent": "CareerCommandCenter/1.0 (personal use)", accept: "text/html" }, redirect: "follow", signal: AbortSignal.timeout(attempt ? 25000 : 12000) });
+        } catch {
+          if (attempt) throw new Error("Site did not answer in time");
+        }
+      }
+      if (!res) throw new Error("Site did not answer in time");
+      if (!res.ok) throw new Error(res.status === 404 ? "Site: page not found (404), fix the address" : res.status === 403 || res.status === 401 ? `Site blocks automated reading (${res.status})` : `Site returned ${res.status}`);
       const text = htmlToText((await res.text()).slice(0, 1_500_000), s.url);
-      if (text.length < 200) throw new Error("Page had no readable text");
+      if (text.length < 200) throw new Error("Site: no readable text (the page builds itself in the browser)");
       const parsed = found.parse(await generateJson(prompt(profile?.focus || "A Master's student in International Affairs in Switzerland.", today, s.name, s.url, text)));
 
       const rows = parsed.opportunities
@@ -111,11 +121,13 @@ export async function runDiscovery(): Promise<FormState> {
     await supabase.from("sources").update({ last_run_at: now.toISOString(), last_status: status }).eq("id", s.id);
   };
   const queue = [...sources];
+  const started = Date.now();
+  let scanned = 0;
   await Promise.all(Array.from({ length: SCAN_PARALLEL }, async () => {
-    for (let s = queue.shift(); s; s = queue.shift()) await scanOne(s);
+    for (let s = queue.shift(); s && Date.now() - started < SCAN_BUDGET_MS; s = queue.shift()) { scanned += 1; await scanOne(s); }
   }));
   revalidatePath("/", "layout");
-  return { ok: failed < sources.length, message: `Scanned ${sources.length} source${sources.length > 1 ? "s" : ""}: ${added} new, ${failed} failed. Details are in Settings.` };
+  return { ok: failed < scanned, message: `Scanned ${scanned} of ${sources.length} sources: ${added} new, ${failed} failed.${scanned < sources.length ? " Ran out of time; scan again for the rest." : ""} Details are in Settings.` };
 }
 
 export async function addSource(_: FormState, form: FormData): Promise<FormState> {

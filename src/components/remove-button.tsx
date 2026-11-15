@@ -1,6 +1,6 @@
 import { removeRecord } from "@/lib/actions";
 
-export function RemoveButton({ table, id, label }: { table: "opportunities" | "applications"; id: string; label: string }) {
+export function RemoveButton({ table, id, label }: { table: "opportunities" | "applications" | "goals" | "achievements" | "contacts" | "decisions"; id: string; label: string }) {
   return (
     <form action={removeRecord}>
       <input type="hidden" name="table" value={table} />

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireUser } from "./supabase/server";
 import { TZ, zonedToUtc } from "./time";
 import { COLORS } from "./types";
+import { isRecordKind, RECORDS } from "./records";
 
 export type FormState = { ok: boolean; message: string } | null;
 
@@ -150,6 +151,7 @@ const STATUSES = {
   applications: ["researching", "preparing", "applied", "interview", "offer", "rejected", "withdrawn"],
 } as const;
 const table = z.enum(["opportunities", "applications"]);
+const removable = z.enum(["opportunities", "applications", "goals", "achievements", "contacts", "decisions"]);
 
 export async function setRecordStatus(form: FormData) {
   const t = table.parse(form.get("table"));
@@ -160,7 +162,7 @@ export async function setRecordStatus(form: FormData) {
 }
 
 export async function removeRecord(form: FormData) {
-  const t = table.parse(form.get("table"));
+  const t = removable.parse(form.get("table"));
   const { supabase } = await requireUser();
   await supabase.from(t).update({ deleted_at: new Date().toISOString() }).eq("id", id.parse(form.get("id")));
   revalidatePath("/", "layout");
@@ -220,4 +222,27 @@ export async function updateRecord(_: FormState, form: FormData): Promise<FormSt
   if (error || !data?.length) return { ok: false, message: "Could not save. Try again." };
   revalidatePath("/", "layout");
   redirect(BACK[kind.data]);
+}
+
+/** Add or edit a goal, achievement or contact. With an id it updates and returns to the list; without one it adds. */
+export async function saveRecord(_: FormState, form: FormData): Promise<FormState> {
+  const kind = String(form.get("_kind") ?? "");
+  if (!isRecordKind(kind)) return { ok: false, message: "This record could not be found." };
+  const cfg = RECORDS[kind];
+  const p = cfg.schema.safeParse(Object.fromEntries([...form].filter(([k]) => !k.startsWith("_"))));
+  if (!p.success) return { ok: false, message: p.error.issues[0].message };
+  const rowId = id.safeParse(form.get("_id"));
+  const { supabase } = await requireUser();
+  const row = p.data as Record<string, unknown>;
+  const tbl = cfg.table as string;
+  if (rowId.success) {
+    const { data, error } = await supabase.from(tbl).update(row).eq("id", rowId.data).select("id");
+    if (error || !data?.length) return { ok: false, message: "Could not save. Try again." };
+    revalidatePath("/", "layout");
+    redirect(cfg.back);
+  }
+  const { error } = await supabase.from(tbl).insert(row);
+  if (error) return { ok: false, message: "Could not save. Try again." };
+  revalidatePath("/", "layout");
+  return { ok: true, message: `Added the ${cfg.noun}.` };
 }

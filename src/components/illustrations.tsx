@@ -71,6 +71,35 @@ const SPOTS = {
       <path d="M32 58 H64 L60 78 H36Z" fill="#f08a6b" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
     </>
   ),
+  people: (
+    <>
+      <circle cx="48" cy="48" r="44" fill="var(--t-sky)" />
+      <circle cx="36" cy="38" r="9" fill="#ffffff" stroke="#1c2b24" strokeWidth="2.5" /><path d="M20 70 C20 56 28 52 36 52 C44 52 52 56 52 70Z" fill="#a8d9bc" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+      <circle cx="62" cy="42" r="8" fill="#ffffff" stroke="#1c2b24" strokeWidth="2.5" /><path d="M50 70 C50 59 56 55 62 55 C68 55 76 59 76 70Z" fill="#f08a6b" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+    </>
+  ),
+  scales: (
+    <>
+      <circle cx="48" cy="48" r="44" fill="var(--t-lilac)" />
+      <path d="M48 24 V72 M34 72 H62 M24 34 H72" stroke="#1c2b24" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M16 52 L24 34 L32 52Z" fill="#ffffff" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" /><path d="M14 52 H34 C34 59 29 62 24 62 C19 62 14 59 14 52Z" fill="#a8d9bc" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M64 52 L72 34 L80 52Z" fill="#ffffff" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" /><path d="M62 52 H82 C82 59 77 62 72 62 C67 62 62 59 62 52Z" fill="#f08a6b" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+    </>
+  ),
+  chat: (
+    <>
+      <circle cx="48" cy="48" r="44" fill="var(--t-mint)" />
+      <path d="M22 30 H74 a6 6 0 0 1 6 6 V58 a6 6 0 0 1 -6 6 H46 L34 74 V64 H22 a6 6 0 0 1 -6 -6 V36 a6 6 0 0 1 6 -6Z" fill="#ffffff" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M48 37 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3Z" fill="#ffd08a" stroke="#1c2b24" strokeWidth="2" strokeLinejoin="round" />
+    </>
+  ),
+  steps: (
+    <>
+      <circle cx="48" cy="48" r="44" fill="var(--t-peach)" />
+      <path d="M20 72 V58 H36 V46 H52 V34 H68 V72Z" fill="#a8d9bc" stroke="#1c2b24" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M68 34 V20" stroke="#1c2b24" strokeWidth="2.5" strokeLinecap="round" /><path d="M68 20 L80 24 L68 28Z" fill="#f08a6b" />
+    </>
+  ),
 } as const;
 
 export function Spot({ name, className = "" }: { name: keyof typeof SPOTS; className?: string }) {

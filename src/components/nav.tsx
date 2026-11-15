@@ -3,20 +3,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
-  { href: "/", label: "Command Center", short: "Home" },
-  { href: "/calendar", label: "Calendar", short: "Calendar" },
-  { href: "/academics", label: "Academics", short: "Study" },
-  { href: "/opportunities", label: "Opportunity Radar", short: "Radar" },
-  { href: "/career", label: "Career Pipeline", short: "Career" },
-  { href: "/settings", label: "Settings", short: "Setup" },
+  { href: "/", label: "Command Center", short: "Home", main: true },
+  { href: "/calendar", label: "Calendar", short: "Calendar", main: true },
+  { href: "/academics", label: "Academics", short: "Study", main: true },
+  { href: "/opportunities", label: "Opportunity Radar", short: "Radar", main: true },
+  { href: "/career", label: "Career Pipeline", short: "Career", main: true },
+  { href: "/network", label: "Network", short: "Network", main: false },
+  { href: "/growth", label: "Goals and wins", short: "Goals", main: false },
+  { href: "/decisions", label: "Decision Lab", short: "Decide", main: false },
+  { href: "/copilot", label: "Co-pilot", short: "Co-pilot", main: false },
+  { href: "/insights", label: "Insights", short: "Insights", main: false },
+  { href: "/settings", label: "Settings", short: "Setup", main: false },
 ] as const;
+const MORE = { href: "/more", label: "More", short: "More", main: true } as const;
 
 export function Nav({ variant }: { variant: "side" | "bottom" }) {
   const path = usePathname();
   return (
     <nav aria-label="Main" className={variant === "side" ? "flex flex-col gap-0.5" : "grid grid-cols-6"}>
-      {LINKS.map((l) => {
-        const active = l.href === "/" ? path === "/" : path.startsWith(l.href);
+      {(variant === "side" ? LINKS : [...LINKS.filter((l) => l.main), MORE]).map((l) => {
+        const active = l.href === "/" ? path === "/" : l.href === "/more" ? LINKS.some((x) => !x.main && path.startsWith(x.href)) || path === "/more" : path.startsWith(l.href);
         return (
           <Link
             key={l.href}

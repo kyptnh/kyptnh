@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { EditForm, type Field } from "@/components/edit-form";
+import { EditForm, RecordForm, type Field } from "@/components/edit-form";
+import { isRecordKind, RECORDS } from "@/lib/records";
 import { Skeleton } from "@/components/skeleton";
 import { getCourses } from "@/lib/data";
 import { requireUser } from "@/lib/supabase/server";
@@ -16,6 +17,19 @@ const TABLE = { item: ["items", ITEM_COLS, "/academics", "Edit item"], course: [
 
 async function Edit({ params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
+  if (isRecordKind(kind) && /^[0-9a-f-]{36}$/.test(id)) {
+    const cfg = RECORDS[kind];
+    const { supabase } = await requireUser();
+    const { data } = await supabase.from(cfg.table as string).select(cfg.cols as string).eq("id", id).is("deleted_at", null).maybeSingle();
+    if (!data) notFound();
+    return (
+      <>
+        <p className="kicker">Edit</p>
+        <h1 className="mt-1 font-serif text-4xl">Edit {cfg.noun}</h1>
+        <div className="card mt-6"><RecordForm kind={kind} id={id} fields={cfg.fields(data as unknown as Record<string, unknown>)} back={cfg.back} submit="Save changes" /></div>
+      </>
+    );
+  }
   if (!(kind in TABLE) || !/^[0-9a-f-]{36}$/.test(id)) notFound();
   const [table, cols, back, title] = TABLE[kind as keyof typeof TABLE];
   const { supabase } = await requireUser();

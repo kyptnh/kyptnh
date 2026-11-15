@@ -1,0 +1,3 @@
+-- Applied to the hosted project on 2026-11-15 (see Supabase migration history for the full statements).
+-- 0004b: calendar_feeds.color. 0005: goals, achievements, contacts, decisions, each with owner-only
+-- row-level security, a user index and an updated_at trigger.
