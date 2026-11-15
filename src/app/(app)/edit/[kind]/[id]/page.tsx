@@ -76,7 +76,7 @@ async function Edit({ params }: { params: Promise<{ kind: string; id: string }> 
   return (
     <>
       <p className="kicker">Edit</p>
-      <h1 className="mt-1 font-display font-semibold tracking-tight text-4xl">{title}</h1>
+      <h1 className="mt-1 font-serif text-4xl">{title}</h1>
       <EditForm kind={kind} id={id} fields={fields} back={back} />
     </>
   );

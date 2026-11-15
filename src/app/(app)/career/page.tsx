@@ -50,7 +50,7 @@ async function Pipeline() {
   return (
     <>
       <p className="kicker">Internships and jobs</p>
-      <h1 className="mt-1 font-display font-semibold tracking-tight text-4xl">Career Pipeline</h1>
+      <h1 className="mt-1 font-serif text-4xl">Career Pipeline</h1>
 
       <dl className="mt-6 grid grid-cols-4 gap-3">
         {[["Preparing", count("researching") + count("preparing"), "var(--c-slate)"], ["Applied", count("applied"), "var(--accent)"], ["Interview", count("interview"), "var(--c-plum)"], ["Offers", count("offer"), "var(--ok)"]].map(([k, v, color]) => (

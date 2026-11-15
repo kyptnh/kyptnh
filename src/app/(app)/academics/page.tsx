@@ -33,7 +33,7 @@ async function Academics() {
   return (
     <>
       <p className="kicker">Master&apos;s programme</p>
-      <h1 className="mt-1 font-display font-semibold tracking-tight text-4xl">Academics</h1>
+      <h1 className="mt-1 font-serif text-4xl">Academics</h1>
 
       <section className="mt-6" aria-labelledby="h-load">
         <h2 id="h-load" className="eyebrow">Workload, next 12 weeks</h2>
@@ -62,7 +62,7 @@ async function Academics() {
         )}
         {[...months].map(([month, list]) => (
           <div key={month} className="mt-3">
-            <h3 className="font-display font-semibold tracking-tight text-lg">{month}</h3>
+            <h3 className="font-serif text-lg">{month}</h3>
             <ul className="card mt-1.5 divide-y divide-line">
               {list.map((i) => <ItemRow key={i.id} item={i} course={byId.get(i.course_id ?? "")} now={now} />)}
             </ul>

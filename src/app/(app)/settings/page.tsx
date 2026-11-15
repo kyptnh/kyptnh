@@ -26,7 +26,7 @@ async function Settings() {
   return (
     <>
       <p className="kicker">Setup</p>
-      <h1 className="mt-1 font-display font-semibold tracking-tight text-4xl">Settings</h1>
+      <h1 className="mt-1 font-serif text-4xl">Settings</h1>
 
       <section className="mt-6" aria-labelledby="h-cal">
         <h2 id="h-cal" className="eyebrow">Send your deadlines to Apple Calendar</h2>
