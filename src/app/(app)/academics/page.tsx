@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { CourseForm } from "@/components/course-form";
 import { ImportSyllabus } from "@/components/import-syllabus";
@@ -94,6 +95,7 @@ async function Academics() {
                     <span aria-hidden className="size-2.5 rounded-full" style={{ background: `var(--c-${c.color})` }} />
                     <span className="min-w-0 flex-1 truncate font-medium">{c.title}</span>
                     <span className="num text-xs text-muted">{[c.code, c.semester, c.ects != null ? `${Number(c.ects)} ECTS` : null, `${n} open`].filter(Boolean).join(" · ")}</span>
+                    <Link href={`/edit/course/${c.id}`} aria-label={`Edit ${c.title}`} className="text-xs text-accent-ink underline-offset-2 hover:underline">Edit</Link>
                     <form action={removeCourse}>
                       <input type="hidden" name="id" value={c.id} />
                       <button aria-label={`Remove ${c.title}`} className="grid size-6 place-items-center rounded text-muted hover:text-signal">×</button>

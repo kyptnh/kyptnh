@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countdown, daysUntil, weekStart, zonedToUtc } from "./time";
+import { countdown, daysUntil, weekStart, zonedDate, zonedTime, zonedToUtc } from "./time";
 import { weekBuckets } from "./workload";
 
 describe("zonedToUtc", () => {
@@ -9,6 +9,15 @@ describe("zonedToUtc", () => {
   it("handles other zones", () => expect(zonedToUtc("2027-01-15T23:59", "America/New_York").toISOString()).toBe("2027-01-16T04:59:00.000Z"));
   it("accepts date only", () => expect(zonedToUtc("2027-01-17").toISOString()).toBe("2027-01-16T23:00:00.000Z"));
   it("rejects junk", () => expect(() => zonedToUtc("tomorrow")).toThrow());
+});
+
+describe("edit form round trip", () => {
+  it("shows a stored instant as the same Zurich date and time it was entered with", () => {
+    const stored = zonedToUtc("2027-06-10T09:30");
+    expect(zonedDate(stored)).toBe("2027-06-10");
+    expect(zonedTime(stored)).toBe("09:30");
+    expect(zonedTime(zonedToUtc("2026-12-18T00:05"))).toBe("00:05");
+  });
 });
 
 describe("weeks and countdowns", () => {

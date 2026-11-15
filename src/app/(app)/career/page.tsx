@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { ApplicationForm } from "@/components/record-forms";
 import { RemoveButton } from "@/components/remove-button";
@@ -34,6 +35,7 @@ function Row({ a, now }: { a: Application; now: Date }) {
         ) : <p className="text-xs text-muted">No date set</p>}
       </div>
       <StatusSelect table="applications" id={a.id} status={a.status} options={APP_STATUSES} label={label} />
+      <Link href={`/edit/application/${a.id}`} aria-label={`Edit ${label}`} className="grid h-8 place-items-center px-1 text-xs text-accent-ink underline-offset-2 hover:underline">Edit</Link>
       <RemoveButton table="applications" id={a.id} label={label} />
     </li>
   );

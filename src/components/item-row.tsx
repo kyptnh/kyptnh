@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { removeItem, setItemStatus } from "@/lib/actions";
 import { countdown, daysUntil, fmtDue } from "@/lib/time";
 import { ASSESSMENT_TYPES, type Course, type Item } from "@/lib/types";
@@ -40,6 +41,7 @@ export function ItemRow({ item, course, now }: { item: Item; course?: Course; no
         <p className="num text-sm">{fmtDue(due, item.all_day)}</p>
         {!done && <p className={`text-xs ${urgent ? "font-medium text-signal" : "text-muted"}`}>{countdown(days)}</p>}
       </div>
+      <Link href={`/edit/item/${item.id}`} aria-label={`Edit “${item.title}”`} className="grid h-6 place-items-center rounded px-1 text-xs text-accent-ink underline-offset-2 hover:underline">Edit</Link>
       <form action={removeItem}>
         <input type="hidden" name="id" value={item.id} />
         <button aria-label={`Remove “${item.title}”`} className="grid size-6 place-items-center rounded text-muted hover:text-signal">×</button>

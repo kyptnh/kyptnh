@@ -68,3 +68,8 @@ export function fmtDay(date: string): string {
 export function fmtMonth(d: Date, tz: string = TZ): string {
   return new Intl.DateTimeFormat("en-GB", { timeZone: tz, month: "long", year: "numeric" }).format(d);
 }
+
+/** Wall-clock time (HH:MM) of an instant as seen in `tz`. */
+export function zonedTime(d: Date, tz: string = TZ): string {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
+}

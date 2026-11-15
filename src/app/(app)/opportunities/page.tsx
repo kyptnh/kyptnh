@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { OpportunityForm } from "@/components/record-forms";
 import { ScanButton } from "@/components/scan-button";
@@ -47,6 +48,7 @@ function Card({ o, now }: { o: Opportunity; now: Date }) {
         <p className="text-[11px] text-muted">{s.complete ? s.parts.map((p) => p.points).join(" + ") : "score incomplete"}</p>
       </div>
       <StatusSelect table="opportunities" id={o.id} status={o.status} options={OPP_STATUSES} label={o.title} />
+      <Link href={`/edit/opportunity/${o.id}`} aria-label={`Edit ${o.title}`} className="grid h-8 place-items-center px-1 text-xs text-accent-ink underline-offset-2 hover:underline">Edit</Link>
       <RemoveButton table="opportunities" id={o.id} label={o.title} />
     </li>
   );

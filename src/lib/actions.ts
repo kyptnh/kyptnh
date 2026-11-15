@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "./supabase/server";
 import { TZ, zonedToUtc } from "./time";
@@ -163,4 +164,60 @@ export async function removeRecord(form: FormData) {
   const { supabase } = await requireUser();
   await supabase.from(t).update({ deleted_at: new Date().toISOString() }).eq("id", id.parse(form.get("id")));
   revalidatePath("/", "layout");
+}
+
+const BACK = { item: "/academics", course: "/academics", opportunity: "/opportunities", application: "/career" } as const;
+
+/** Save edits to one existing record. The form names its kind and id; row-level security limits it to your own rows. */
+export async function updateRecord(_: FormState, form: FormData): Promise<FormState> {
+  const kind = z.enum(["item", "course", "opportunity", "application"]).safeParse(form.get("_kind"));
+  const rowId = id.safeParse(form.get("_id"));
+  if (!kind.success || !rowId.success) return { ok: false, message: "This record could not be found." };
+  const fields = Object.fromEntries([...form].filter(([k]) => !k.startsWith("_")));
+  const bad = (e: z.ZodError) => ({ ok: false, message: e.issues[0].path[0] === "url" ? "The link must start with http:// or https://." : e.issues[0].message });
+  let table: "items" | "courses" | "opportunities" | "applications";
+  let patch: Record<string, unknown>;
+
+  if (kind.data === "item") {
+    const p = itemSchema.safeParse(fields);
+    if (!p.success) return bad(p.error);
+    const d = p.data;
+    table = "items";
+    patch = {
+      title: d.title, kind: d.kind, assessment_type: d.kind === "assessment" ? (d.assessment_type ?? "assignment") : null,
+      course_id: d.course_id ?? null, due_at: zonedToUtc(`${d.date}T${d.time ?? "23:59"}`, TZ).toISOString(), all_day: !d.time,
+      est_hours: d.est_hours ?? null, weight_pct: d.kind === "assessment" ? (d.weight_pct ?? null) : null, notes: d.notes ?? null,
+    };
+  } else if (kind.data === "course") {
+    const p = courseSchema.safeParse(fields);
+    if (!p.success) return bad(p.error);
+    table = "courses";
+    patch = { ...p.data, code: p.data.code ?? null, semester: p.data.semester ?? null, ects: p.data.ects ?? null };
+  } else if (kind.data === "opportunity") {
+    const p = oppSchema.safeParse(fields);
+    if (!p.success) return bad(p.error);
+    const { deadline, ...d } = p.data;
+    table = "opportunities";
+    patch = {
+      ...d, organisation: d.organisation ?? null, url: d.url ?? null, deadline_at: endOfDay(deadline),
+      fit_score: d.fit_score ?? null, strategic_value: d.strategic_value ?? null, effort_hours: d.effort_hours ?? null, notes: d.notes ?? null,
+      // Editing a scanned entry means you have checked it.
+      verified: true,
+    };
+  } else {
+    const p = appSchema.safeParse(fields);
+    if (!p.success) return bad(p.error);
+    const d = p.data;
+    table = "applications";
+    patch = {
+      organisation: d.organisation, role: d.role, track: d.track, url: d.url ?? null, deadline_at: endOfDay(d.deadline),
+      next_step: d.next_step ?? null, next_step_at: endOfDay(d.next_step_date), notes: d.notes ?? null,
+    };
+  }
+
+  const { supabase } = await requireUser();
+  const { data, error } = await supabase.from(table).update(patch).eq("id", rowId.data).select("id");
+  if (error || !data?.length) return { ok: false, message: "Could not save. Try again." };
+  revalidatePath("/", "layout");
+  redirect(BACK[kind.data]);
 }
