@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f5f3ee; --card: #fffdf9; --ink: #1b1b18; --muted: #5f5e57; --line: #dcd9d0;
+  --signal: #b5381f; --ok: #2c6a4d; --heat: 181 56 31;
+  --c-slate: #5b6470; --c-moss: #4f7a4a; --c-ochre: #a8791c; --c-clay: #b5522f; --c-plum: #7c4a78; --c-teal: #2d7a7a;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #121210; --card: #1a1a17; --ink: #ece9e1; --muted: #a09d93; --line: #2e2d28;
+    --signal: #ea7257; --ok: #74b895; --heat: 234 114 87;
+    --c-slate: #9aa4b1; --c-moss: #8fbb89; --c-ochre: #d8ab52; --c-clay: #e08a69; --c-plum: #c08fbc; --c-teal: #6fbcbc;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-paper: var(--paper); --color-card: var(--card); --color-ink: var(--ink); --color-muted: var(--muted);
+  --color-line: var(--line); --color-signal: var(--signal); --color-ok: var(--ok);
+  --font-sans: var(--font-geist-sans); --font-mono: var(--font-geist-mono); --font-serif: var(--font-geist-serif);
 }
+
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans), system-ui, sans-serif; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+@layer components {
+  .eyebrow { @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted; }
+  .label { @apply block font-mono text-[11px] uppercase tracking-[0.12em] text-muted; }
+  .field { @apply mt-1 block h-10 w-full rounded-md border border-line bg-card px-3 text-sm text-ink placeholder:text-muted/70; }
+  .btn { @apply inline-flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-card px-4 text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50; }
+  .btn-primary { @apply inline-flex h-10 items-center justify-center gap-2 rounded-md bg-ink px-4 text-sm font-medium text-paper transition-opacity hover:opacity-90 disabled:opacity-50; }
+  .card { @apply rounded-lg border border-line bg-card; }
+  .num { @apply font-mono tabular-nums; }
+}
+dialog::backdrop { background: rgb(0 0 0 / 0.45); }

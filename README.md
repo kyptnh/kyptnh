@@ -1,36 +1,18 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Career Command Center
 
-## Getting Started
+Personal academic and career operating system. Next.js 16 (App Router) on Vercel, Supabase (Postgres, Auth, row-level security).
 
-First, run the development server:
+## Phase 1 (this commit)
+- Magic-link sign-in, session refresh in `src/proxy.ts`
+- `courses` and `items` tables with row-level security (`supabase/migrations`)
+- Command Center: overdue, next 14 days, prep hours
+- Academics: 12-week workload view, timeline by month, courses
+- Quick add (⌘K / Ctrl+K), installable PWA manifest
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup
+1. Copy `.env.example` to `.env.local` (the values are public, browser-safe keys).
+2. Optional: set `ALLOWED_EMAILS` (comma-separated) so only you can sign in.
+3. In Supabase → Authentication → URL Configuration, set the Site URL to the deployed URL and add `<url>/auth/callback` to Redirect URLs.
+4. `npm run dev`, `npm test`, `npm run build`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All times are stored in UTC and shown in Europe/Zurich.
