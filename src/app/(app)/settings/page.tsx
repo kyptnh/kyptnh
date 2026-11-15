@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Suspense } from "react";
-import { CopyField, ProfileForm, SourceForm } from "@/components/settings-forms";
+import { CalendarForm, CopyField, ProfileForm, SourceForm } from "@/components/settings-forms";
+import { removeCalendar, syncCalendars } from "@/lib/calendars";
 import { Skeleton } from "@/components/skeleton";
 import { ensureCalendarToken, removeSource, resetCalendarToken } from "@/lib/discovery";
 import { requireUser } from "@/lib/supabase/server";
 import { fmtDue } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Settings" };
+export const maxDuration = 120;
 
 async function Settings() {
   const { supabase } = await requireUser();
-  const [token, { data: profile }, { data: sources }] = await Promise.all([
+  const [token, { data: profile }, { data: sources }, { data: feeds }] = await Promise.all([
     ensureCalendarToken(),
     supabase.from("profiles").select("focus").maybeSingle(),
     supabase.from("sources").select("id,name,url,last_run_at,last_status").order("name"),
+    supabase.from("calendar_feeds").select("id,name,last_synced_at,last_status").order("name"),
   ]);
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
@@ -26,7 +29,7 @@ async function Settings() {
       <h1 className="mt-1 font-serif text-4xl">Settings</h1>
 
       <section className="mt-6" aria-labelledby="h-cal">
-        <h2 id="h-cal" className="eyebrow">Calendar feed for Apple Calendar</h2>
+        <h2 id="h-cal" className="eyebrow">Send your deadlines to Apple Calendar</h2>
         <div className="card mt-2 space-y-3 p-4">
           <p className="text-sm">Subscribe once and every deadline here shows up in Apple Calendar, refreshed about hourly. The feed is read-only.</p>
           <CopyField value={feed} label="Calendar feed address" />
@@ -38,6 +41,40 @@ async function Settings() {
             <p className="text-xs text-muted">Anyone with this address can read your deadlines. Reset it if it leaks; you then need to subscribe again.</p>
             <button className="btn shrink-0">Reset address</button>
           </form>
+        </div>
+      </section>
+
+      <section className="mt-8" aria-labelledby="h-in">
+        <h2 id="h-in" className="eyebrow">Bring your Apple Calendar in</h2>
+        <div className="card mt-2">
+          <div className="space-y-2 p-4 text-sm">
+            <p>Share a calendar publicly from iCloud and paste its address here. Its events then appear in the Calendar view, from 30 days back to 180 days ahead.</p>
+            <ol className="list-decimal space-y-1 pl-5 text-muted">
+              <li>Mac: Calendar → right-click the calendar → Share Calendar → tick Public Calendar → copy the address.</li>
+              <li>iPhone: Calendar → Calendars → the ⓘ next to the calendar → Public Calendar → Share Link.</li>
+            </ol>
+            <p className="text-xs text-muted">A public address lets anyone who has it read that calendar, so share only calendars you are comfortable exposing. Events are copied in when you press Sync; they are not live.</p>
+          </div>
+          {(feeds ?? []).length > 0 && (
+            <ul className="divide-y divide-line border-t border-line">
+              {(feeds ?? []).map((f) => (
+                <li key={f.id} className="flex items-start gap-3 px-4 py-3 text-sm">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{f.name}</p>
+                    <p className={`mt-0.5 text-xs ${f.last_status?.startsWith("failed") ? "text-signal" : "text-muted"}`}>
+                      {f.last_synced_at ? `Last sync ${fmtDue(new Date(f.last_synced_at), false)} · ${f.last_status}` : "Not synced yet"}
+                    </p>
+                  </div>
+                  <form action={removeCalendar}>
+                    <input type="hidden" name="id" value={f.id} />
+                    <button aria-label={`Disconnect calendar ${f.name}`} className="grid size-8 place-items-center rounded text-muted hover:text-signal">×</button>
+                  </form>
+                </li>
+              ))}
+              <li className="flex justify-end px-4 py-3"><form action={syncCalendars}><button className="btn">Sync now</button></form></li>
+            </ul>
+          )}
+          <div className="border-t border-line"><CalendarForm /></div>
         </div>
       </section>
 

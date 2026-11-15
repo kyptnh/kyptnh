@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState } from "react";
 import type { FormState } from "@/lib/actions";
+import { addCalendar } from "@/lib/calendars";
 import { addSource, saveProfile } from "@/lib/discovery";
 
 function Status({ state }: { state: FormState }) {
@@ -41,5 +42,19 @@ export function CopyField({ value, label }: { value: string; label: string }) {
         {copied ? "Copied" : "Copy"}
       </button>
     </div>
+  );
+}
+
+export function CalendarForm() {
+  const ref = useRef<HTMLFormElement>(null);
+  const [state, action, pending] = useActionState<FormState, FormData>(addCalendar, null);
+  useEffect(() => { if (state?.ok) ref.current?.reset(); }, [state]);
+  return (
+    <form ref={ref} action={action} className="grid gap-3 p-4 sm:grid-cols-[1fr_2fr_auto] sm:items-end">
+      <div><label htmlFor="k-n" className="label">Name</label><input id="k-n" name="name" required maxLength={120} placeholder="Personal" className="field" /></div>
+      <div><label htmlFor="k-u" className="label">Public calendar address</label><input id="k-u" name="url" required placeholder="webcal://" className="field" /></div>
+      <button className="btn" disabled={pending}>{pending ? "Importing…" : "Connect"}</button>
+      <div className="sm:col-span-3"><Status state={state} /></div>
+    </form>
   );
 }

@@ -1,5 +1,6 @@
 import "server-only";
 import { requireUser } from "./supabase/server";
+import { zonedToUtc } from "./time";
 import { APP_COLS, COURSE_COLS, ITEM_COLS, OPP_COLS, type Application, type Course, type Item, type Opportunity } from "./types";
 
 export async function getCourses(): Promise<Course[]> {
@@ -11,9 +12,22 @@ export async function getCourses(): Promise<Course[]> {
 
 export async function getItems(): Promise<Item[]> {
   const { supabase } = await requireUser();
-  const { data, error } = await supabase.from("items").select(ITEM_COLS).is("deleted_at", null).order("due_at");
+  // Imported calendar events are loaded separately, per month, so they can never crowd out real deadlines.
+  const { data, error } = await supabase.from("items").select(ITEM_COLS).is("deleted_at", null).is("feed_id", null).order("due_at");
   if (error) throw new Error("Could not load items");
   return data as Item[];
+}
+
+/** Events copied in from connected calendars, between two dates (YYYY-MM-DD, Zurich), plus whether any calendar is connected. */
+export async function getImportedEvents(from: string, to: string): Promise<{ events: Item[]; connected: boolean }> {
+  const { supabase } = await requireUser();
+  const [{ data, error }, { count }] = await Promise.all([
+    supabase.from("items").select(ITEM_COLS).not("feed_id", "is", null)
+      .gte("due_at", zonedToUtc(`${from}T00:00`).toISOString()).lte("due_at", zonedToUtc(`${to}T23:59`).toISOString()).order("due_at").limit(1000),
+    supabase.from("calendar_feeds").select("id", { count: "exact", head: true }),
+  ]);
+  if (error) throw new Error("Could not load calendar events");
+  return { events: data as Item[], connected: (count ?? 0) > 0 };
 }
 
 export async function getOpportunities(): Promise<Opportunity[]> {

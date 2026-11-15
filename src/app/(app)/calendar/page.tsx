@@ -4,10 +4,12 @@ import { Suspense } from "react";
 import { EntryRow } from "@/components/entry-row";
 import { Skeleton } from "@/components/skeleton";
 import { buildAgenda, LAYERS, type Entry, type Layer } from "@/lib/agenda";
-import { getApplications, getCourses, getItems, getOpportunities } from "@/lib/data";
+import { getApplications, getCourses, getImportedEvents, getItems, getOpportunities } from "@/lib/data";
+import { syncCalendars } from "@/lib/calendars";
 import { addDays, weekStart, zonedDate } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Calendar" };
+export const maxDuration = 120;
 
 function shiftMonth(m: string, n: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -23,13 +25,6 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
   const hidden = new Set((sp.hide ?? "").split(",").filter((x) => LAYERS.some((l) => l.id === x))) as Set<Layer>;
   const link = (m: string, hide: Set<Layer>) => `/calendar?m=${m}${hide.size ? `&hide=${[...hide].join(",")}` : ""}`;
 
-  const entries = buildAgenda(items, courses, opps, apps).filter((e) => !hidden.has(e.layer));
-  const byDay = new Map<string, Entry[]>();
-  for (const e of entries) {
-    const d = zonedDate(new Date(e.at));
-    byDay.set(d, [...(byDay.get(d) ?? []), e]);
-  }
-
   const first = `${month}-01`;
   const gridStart = weekStart(new Date(first + "T12:00:00Z"), "UTC");
   const days: string[] = [];
@@ -37,6 +32,14 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
     if (days.length >= 35 && d.slice(0, 7) !== month) break;
     days.push(d);
   }
+  const imported = await getImportedEvents(days[0], days[days.length - 1]);
+  const entries = buildAgenda([...items, ...imported.events], courses, opps, apps).filter((e) => !hidden.has(e.layer));
+  const byDay = new Map<string, Entry[]>();
+  for (const e of entries) {
+    const d = zonedDate(new Date(e.at));
+    byDay.set(d, [...(byDay.get(d) ?? []), e]);
+  }
+
   const title = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", month: "long", year: "numeric" }).format(new Date(first + "T00:00:00Z"));
   const inMonth = entries.filter((e) => zonedDate(new Date(e.at)).startsWith(month));
 
@@ -46,6 +49,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
       <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-serif text-4xl">{title}</h1>
         <div className="flex gap-2">
+          {imported.connected && <form action={syncCalendars}><button className="btn h-9 px-3">Sync calendars</button></form>}
           <Link href={link(shiftMonth(month, -1), hidden)} className="btn h-9 px-3" aria-label="Previous month">←</Link>
           <Link href={link(today.slice(0, 7), hidden)} className="btn h-9 px-3">Today</Link>
           <Link href={link(shiftMonth(month, 1), hidden)} className="btn h-9 px-3" aria-label="Next month">→</Link>
@@ -98,7 +102,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
         {inMonth.length ? (
           <ul className="card mt-2 divide-y divide-line">{inMonth.map((e) => <EntryRow key={e.key} entry={e} now={now} />)}</ul>
         ) : (
-          <div className="card mt-2 p-6 text-sm text-muted">Nothing dated this month. Deadlines from Academics, the Opportunity Radar and the Career Pipeline all appear here.</div>
+          <div className="card mt-2 p-6 text-sm text-muted">Nothing dated this month. Deadlines from Academics, the Opportunity Radar and the Career Pipeline all appear here, with events from any calendar you connect in Settings.</div>
         )}
       </section>
     </>

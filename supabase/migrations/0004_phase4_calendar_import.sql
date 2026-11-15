@@ -1,0 +1,3 @@
+-- Applied to the hosted project on 2026-11-15 (see Supabase migration history for the full statement).
+-- Adds calendar_feeds (owner-only row-level security), items.feed_id and items.external_uid, and
+-- changes public.calendar_feed so imported events are not published back out.
