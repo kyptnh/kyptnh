@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Spot } from "@/components/illustrations";
 import { ApplicationForm } from "@/components/record-forms";
 import { RemoveButton } from "@/components/remove-button";
 import { Skeleton } from "@/components/skeleton";
@@ -49,12 +50,13 @@ async function Pipeline() {
 
   return (
     <>
+      <Spot name="summit" className="float-right -mt-2 ml-4 size-20 sm:size-24" />
       <p className="kicker">Internships and jobs</p>
       <h1 className="mt-1 font-serif text-4xl">Career Pipeline</h1>
 
       <dl className="mt-6 grid grid-cols-4 gap-3">
-        {[["Preparing", count("researching") + count("preparing"), "var(--c-slate)"], ["Applied", count("applied"), "var(--accent)"], ["Interview", count("interview"), "var(--c-plum)"], ["Offers", count("offer"), "var(--ok)"]].map(([k, v, color]) => (
-          <div key={String(k)} className="card border-t-[3px] p-4" style={{ borderTopColor: String(color) }}><dt className="label">{k}</dt><dd className="num mt-1 text-3xl">{v}</dd></div>
+        {[["Preparing", count("researching") + count("preparing"), "var(--t-sky)"], ["Applied", count("applied"), "var(--t-mint)"], ["Interview", count("interview"), "var(--t-lilac)"], ["Offers", count("offer"), "var(--t-sun)"]].map(([k, v, color]) => (
+          <div key={String(k)} className="rounded-2xl p-4" style={{ background: String(color) }}><dt className="label">{k}</dt><dd className="num mt-1 text-3xl">{v}</dd></div>
         ))}
       </dl>
 

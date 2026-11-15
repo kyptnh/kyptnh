@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Command Center", statusBarStyle: "default" },
 };
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f5f3ee" }, { media: "(prefers-color-scheme: dark)", color: "#121210" }],
+  themeColor: "#f5faf6",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

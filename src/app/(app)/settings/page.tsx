@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Suspense } from "react";
+import { Spot } from "@/components/illustrations";
 import { CalendarForm, CopyField, FeedColor, ProfileForm, SourceForm } from "@/components/settings-forms";
 import { removeCalendar, syncCalendars } from "@/lib/calendars";
 import { Skeleton } from "@/components/skeleton";
@@ -25,6 +26,7 @@ async function Settings() {
 
   return (
     <>
+      <Spot name="plant" className="float-right -mt-2 ml-4 size-20 sm:size-24" />
       <p className="kicker">Setup</p>
       <h1 className="mt-1 font-serif text-4xl">Settings</h1>
 

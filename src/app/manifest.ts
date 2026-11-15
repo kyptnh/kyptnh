@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Personal academic and career operating system",
     start_url: "/",
     display: "standalone",
-    background_color: "#f5f3ee",
-    theme_color: "#1b1b18",
+    background_color: "#f5faf6",
+    theme_color: "#17794c",
     icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
   };
 }

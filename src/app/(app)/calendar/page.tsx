@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Spot } from "@/components/illustrations";
 import { EntryRow } from "@/components/entry-row";
 import { Skeleton } from "@/components/skeleton";
 import { ACADEMIC, buildAgenda, feedLayer, OTHER, PURSUITS, type Entry } from "@/lib/agenda";
@@ -50,6 +51,7 @@ async function Calendar({ searchParams }: { searchParams: Promise<{ m?: string; 
 
   return (
     <>
+      <Spot name="calendar" className="float-right -mt-2 ml-4 size-20 sm:size-24" />
       <p className="kicker">Everything with a date</p>
       <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-serif text-4xl">{title}</h1>

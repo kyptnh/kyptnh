@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Spot } from "@/components/illustrations";
 import { OpportunityForm } from "@/components/record-forms";
 import { ScanButton } from "@/components/scan-button";
 import { RemoveButton } from "@/components/remove-button";
@@ -64,6 +65,7 @@ async function Radar() {
 
   return (
     <>
+      <Spot name="compass" className="float-right -mt-2 ml-4 size-20 sm:size-24" />
       <p className="kicker">Extra-curricular</p>
       <h1 className="mt-1 font-serif text-4xl">Opportunity Radar</h1>
       <div className="card mt-5 flex flex-wrap items-center justify-between gap-3 border-l-[3px] p-4" style={{ borderLeftColor: "var(--accent)" }}>

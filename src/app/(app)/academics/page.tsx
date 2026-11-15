@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Spot } from "@/components/illustrations";
 import { CourseForm } from "@/components/course-form";
 import { ImportSyllabus } from "@/components/import-syllabus";
 import { ItemRow } from "@/components/item-row";
@@ -32,6 +33,7 @@ async function Academics() {
 
   return (
     <>
+      <Spot name="book" className="float-right -mt-2 ml-4 size-20 sm:size-24" />
       <p className="kicker">Master&apos;s programme</p>
       <h1 className="mt-1 font-serif text-4xl">Academics</h1>
 
